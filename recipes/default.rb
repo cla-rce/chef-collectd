@@ -25,13 +25,29 @@ when "ubuntu"
     action :upgrade
   end
 
-  apt_repository "jkerzner-backports" do
-    uri "http://ppa.launchpad.net/jeff-kerzner/backport-copies/ubuntu"
-    distribution node['lsb']['codename']
-    components ['utils']
-    keyserver "keyserver.ubuntu.com"
-    key "2B45553ABF5D9B299C5590591926CD31E8A3AC5F"
+  script "enable_ppa_jdub" do
+    interpreter "bash"
+    user "root"
+    cwd "/tmp"
+    if node[:platform_version].to_f >= 10.04 then
+      add_apt_repo_flags = "-y"
+    else
+      add_apt_repo_flags = ""
+    end
+    code <<-EOH
+    /usr/bin/add-apt-repository #{add_apt_repo_flags} "ppa:jdub
+    EOH
+    not_if "/usr/bin/test -f /etc/apts/sources.list.d/jdub-ppa-lucid.list"
+    notifies :run, "execute[apt_update]", :immediately
   end
+
+#  apt_repository "jkerzner-backports" do
+#    uri "http://ppa.launchpad.net/jeff-kerzner/backport-copies/ubuntu"
+#    distribution node['lsb']['codename']
+#    components ['utils']
+#    keyserver "keyserver.ubuntu.com"
+#    key "2B45553ABF5D9B299C5590591926CD31E8A3AC5F"
+#  end
   
   execute "apt_update" do
     command "apt-get update"
