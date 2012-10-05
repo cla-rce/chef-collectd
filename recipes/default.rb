@@ -17,8 +17,31 @@
 # limitations under the License.
 #
 
-package "collectd" do
-  package_name "collectd-core"
+case node[:platform]
+when "ubuntu"
+  include_recipe "apt::default"
+
+  package "python-software-properties" do
+    action :upgrade
+  end
+
+  apt_repository "jkerzner-backports" do
+    uri "http://ppa.launchpad.net/jeff-kerzner/backport-copies/ubuntu"
+    distribution node['lsb']['codename']
+    components ['utils', 'main']
+    keyserver "keyserver.ubuntu.com"
+    key "E8A3AC5F"
+  end
+  
+  execute "apt_update_add_ppa" do
+    command "apt-get update"
+    action :nothing
+  end
+
+  package "collectd" do
+    package_name "collectd-core"
+    version "4.10.1-1~ppa1"
+  end
 end
 
 service "collectd" do
