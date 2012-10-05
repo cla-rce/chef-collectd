@@ -28,12 +28,13 @@ when "ubuntu"
   apt_repository "jkerzner-backports" do
     uri "http://ppa.launchpad.net/jeff-kerzner/backport-copies/ubuntu"
     distribution node['lsb']['codename']
-    components ['utils', 'main']
+    components ['utils']
     keyserver "keyserver.ubuntu.com"
     key "E8A3AC5F"
+    notifies :run "execute[apt_update]", :immediately
   end
   
-  execute "apt_update_add_ppa" do
+  execute "apt_update" do
     command "apt-get update"
     action :nothing
   end
