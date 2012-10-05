@@ -31,7 +31,7 @@ when "ubuntu"
     components ['utils']
     keyserver "keyserver.ubuntu.com"
     key "E8A3AC5F"
-    notifies :run "execute[apt_update]", :immediately
+    notifies :run, "execute[apt_update]", :immediately
   end
   
   execute "apt_update" do
