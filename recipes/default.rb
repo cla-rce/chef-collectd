@@ -30,7 +30,7 @@ when "ubuntu"
     distribution node['lsb']['codename']
     components ['utils']
     keyserver "keyserver.ubuntu.com"
-    key "E8A3AC5F"
+    key "2B45553ABF5D9B299C5590591926CD31E8A3AC5F"
   end
   
   execute "apt_update" do
