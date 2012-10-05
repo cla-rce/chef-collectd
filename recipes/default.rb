@@ -29,7 +29,7 @@ when "ubuntu"
     interpreter "bash"
     user "root"
     cwd "/tmp"
-    if node[:platform_version].to_f >= 10.04 then
+    if node[:platform_version].to_f >= 11.04 then
       add_apt_repo_flags = "-y"
     else
       add_apt_repo_flags = ""
