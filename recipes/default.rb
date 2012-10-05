@@ -35,7 +35,7 @@ when "ubuntu"
       add_apt_repo_flags = ""
     end
     code <<-EOH
-    /usr/bin/add-apt-repository #{add_apt_repo_flags} "ppa:jdub
+    /usr/bin/add-apt-repository #{add_apt_repo_flags} ppa:jdub
     EOH
     not_if "/usr/bin/test -f /etc/apts/sources.list.d/jdub-ppa-lucid.list"
     notifies :run, "execute[apt_update]", :immediately
