@@ -17,29 +17,45 @@
 # limitations under the License.
 #
 
+
+include_recipe "apt::default"
+
+package "python-software-properties" do
+  action :upgrade
+end
+
+collectd_version = ''
+
 case node[:platform]
 when "ubuntu"
-  include_recipe "apt::default"
-
-  package "python-software-properties" do
-    action :upgrade
-  end
-
-  script "enable_ppa_jdub" do
-    interpreter "bash"
-    user "root"
-    cwd "/tmp"
-    if node[:platform_version].to_f >= 11.04 then
-      add_apt_repo_flags = "-y"
-    else
-      add_apt_repo_flags = ""
+  case node[:platform_version].to_f
+  when 10.04
+    script "enable_ppa_jdub" do
+      interpreter "bash"
+      user "root"
+      cwd "/tmp"
+      if node[:platform_version].to_f >= 11.04 then
+        add_apt_repo_flags = "-y"
+      else
+        add_apt_repo_flags = ""
+      end
+      code <<-EOH
+        /usr/bin/add-apt-repository #{add_apt_repo_flags} ppa:jdub
+      EOH
+      not_if "/usr/bin/test -f /etc/apts/sources.list.d/jdub-ppa-lucid.list"
+      notifies :run, "execute[apt_update]", :immediately
     end
-    code <<-EOH
-    /usr/bin/add-apt-repository #{add_apt_repo_flags} ppa:jdub
-    EOH
-    not_if "/usr/bin/test -f /etc/apts/sources.list.d/jdub-ppa-lucid.list"
-    notifies :run, "execute[apt_update]", :immediately
-  end
+    collectd_version = "4.10.1-1~ppa1"
+  when 12.04
+    collectd_version = "4.10.1"
+  else
+    collectd_version = "4.10.1"
+end
+
+package "collectd" do
+  package_name "collectd-core"
+  version collectd_version
+end
 
 #  apt_repository "jkerzner-backports" do
 #    uri "http://ppa.launchpad.net/jeff-kerzner/backport-copies/ubuntu"
@@ -54,10 +70,6 @@ when "ubuntu"
     action :nothing
   end
 
-  package "collectd" do
-    package_name "collectd-core"
-    version "4.10.1-1~ppa1"
-  end
 end
 
 service "collectd" do
