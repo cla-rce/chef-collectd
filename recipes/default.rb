@@ -55,18 +55,10 @@ package "collectd" do
   version collectd_version
 end
 
-#  apt_repository "jkerzner-backports" do
-#    uri "http://ppa.launchpad.net/jeff-kerzner/backport-copies/ubuntu"
-#    distribution node['lsb']['codename']
-#    components ['utils']
-#    keyserver "keyserver.ubuntu.com"
-#    key "2B45553ABF5D9B299C5590591926CD31E8A3AC5F"
-#  end
-  
-  execute "apt_update" do
-    command "apt-get update"
-    action :nothing
-  end
+execute "apt_update" do
+  command "apt-get update"
+  action :nothing
+end
 
 end
 
