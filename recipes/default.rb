@@ -47,9 +47,8 @@ when "ubuntu"
     end
     collectd_version = "4.10.1-1~ppa1"
   when 12.04
-    collectd_version = "4.10.1"
-  else
-    collectd_version = "4.10.1"
+    collectd_version = "4.10.1-2.1ubuntu7"
+  end
 end
 
 package "collectd" do
