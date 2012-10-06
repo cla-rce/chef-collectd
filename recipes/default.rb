@@ -28,27 +28,26 @@ collectd_version = ''
 
 case node[:platform]
 when "ubuntu"
-  case node[:platform_version].to_f
-  when 10.04
-    script "enable_ppa_jdub" do
-      interpreter "bash"
-      user "root"
-      cwd "/tmp"
-      if node[:platform_version].to_f >= 11.04 then
-        add_apt_repo_flags = "-y"
-      else
-        add_apt_repo_flags = ""
-      end
-      code <<-EOH
-        /usr/bin/add-apt-repository #{add_apt_repo_flags} ppa:jdub
-      EOH
-      not_if "/usr/bin/test -f /etc/apts/sources.list.d/jdub-ppa-lucid.list"
-      notifies :run, "execute[apt_update]", :immediately
+case node[:platform_version].to_f
+when 10.04
+  script "enable_ppa_jdub" do
+    interpreter "bash"
+    user "root"
+    cwd "/tmp"
+    if node[:platform_version].to_f >= 11.04 then
+      add_apt_repo_flags = "-y"
+    else
+      add_apt_repo_flags = ""
     end
-    collectd_version = "4.10.1-1~ppa1"
-  when 12.04
-    collectd_version = "4.10.1-2.1ubuntu7"
+    code <<-EOH
+      /usr/bin/add-apt-repository #{add_apt_repo_flags} ppa:jdub
+    EOH
+    not_if "/usr/bin/test -f /etc/apts/sources.list.d/jdub-ppa-lucid.list"
+    notifies :run, "execute[apt_update]", :immediately
   end
+  collectd_version = "4.10.1-1~ppa1"
+when 12.04
+  collectd_version = "4.10.1-2.1ubuntu7"
 end
 
 package "collectd" do
