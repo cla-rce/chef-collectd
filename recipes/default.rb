@@ -17,9 +17,47 @@
 # limitations under the License.
 #
 
-package "collectd" do
-  package_name "collectd-core"
+include_recipe "apt::default"
+
+package "python-software-properties" do
+  action :upgrade
 end
+
+collected_package_version = ""
+
+case node[:platform]
+when "ubuntu"
+  case node[:platform_version].to_f
+  when 10.04
+    script "enable_ppa_jdub" do
+      interpretter "bash"
+      user "root"
+      cwd "tmp"
+      code <<-EOH
+        /usr/bin/add-apt-repository ppa:jdub
+      EOH
+      not_if "/usr/bin/test -f /etc/apt/sources.list.d/jdub-ppa-lucid.list"
+      notifies :run, "execute[apt_update]", :immediately
+      collectd_package_version = "4.10.1-1~ppa1"
+    end
+  when 12.04
+    collectd_package_version = "4.10.1-2.1ubuntu7"
+  end #platform_version
+
+  package "collectd-core" do
+    package_name "collectd-core"
+    version collectd_package_version
+  end
+
+  execute "apt-update" do
+    command "apt-get update"
+    action :nothing
+  end
+else #not ubuntu
+  package "collectd" do
+    package_name "collectd-core"
+  end
+end #platform
 
 service "collectd" do
   supports :restart => true, :status => true
