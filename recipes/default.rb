@@ -18,6 +18,8 @@
 #
 
 collectd_version = ''
+collectd_package_name = ''
+
 
 case node[:platform]
 when "ubuntu"
@@ -26,6 +28,8 @@ include_recipe "apt::default"
 package "python-software-properties" do
   action :upgrade
 end
+
+collectd_package_name = "collectd-core"
 
 case node[:platform_version].to_f
 when 10.04
@@ -50,7 +54,7 @@ when 12.04
 end
 
 package "collectd" do
-  package_name "collectd-core"
+  package_name collectd_package_name
   version collectd_version
 end
 
@@ -63,8 +67,14 @@ when "redhat", "centos"
 include_recipe "yum::default"
 include_recipe "yum::repoforge"
 
+if node[:kernel][:machine] == 'x86_64'
+  collectd_package_name = "collectd.x86_64"
+else
+  collectd_package_name = "collectd.i386"
+end
+
 package "collectd" do
-  package_name "collectd"
+  package_name collectd_package_name
 end
   
 
