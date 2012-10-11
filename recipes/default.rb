@@ -17,17 +17,16 @@
 # limitations under the License.
 #
 
-
-
-package "python-software-properties" do
-  action :upgrade
-end
-
 collectd_version = ''
 
 case node[:platform]
 when "ubuntu"
 include_recipe "apt::default"
+
+package "python-software-properties" do
+  action :upgrade
+end
+
 case node[:platform_version].to_f
 when 10.04
   script "enable_ppa_jdub" do
