@@ -18,7 +18,6 @@
 #
 
 
-include_recipe "apt::default"
 
 package "python-software-properties" do
   action :upgrade
@@ -28,6 +27,7 @@ collectd_version = ''
 
 case node[:platform]
 when "ubuntu"
+include_recipe "apt::default"
 case node[:platform_version].to_f
 when 10.04
   script "enable_ppa_jdub" do
@@ -59,6 +59,15 @@ execute "apt_update" do
   command "apt-get update"
   action :nothing
 end
+
+when "redhat", "centos"
+include_recipe "yum::default"
+include_recipe "yum::repoforge"
+
+package "collectd" do
+  package_name "collectd"
+end
+  
 
 end
 
