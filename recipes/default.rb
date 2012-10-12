@@ -79,7 +79,22 @@ yum_package "#{collectd_package_name}" do
   arch "#{collectd_version}"
   flush_cache [ :before ]
 end
-  
+
+cookbook_file "/tmp/collectd_centos58_init_patch" do
+  source "centos58_init_patch"
+  mode "0644"
+end
+
+execute "patch" do
+  command "/usr/bin/patch /etc/init.d/collectd < /tmp/collectd_centos58_init_patch"
+  user "root"
+  action :run
+end
+
+execute "rm_diff" do
+  command "/bin/rm /tmp/collectd_centos58_init_patch"
+  action :run
+end
 
 end
 
