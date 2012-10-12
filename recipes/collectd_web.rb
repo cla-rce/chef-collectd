@@ -30,6 +30,13 @@ directory node[:collectd][:collectd_web][:path] do
   mode "755"
 end
 
+tempate "#{node[:collectd][:config_dir]}/collection.conf" do
+  source "collection.conf"
+  owner "root"
+  group "root"
+  mode "644"
+end
+
 bash "install_collectd_web" do
   user "root"
   cwd node[:collectd][:collectd_web][:path]
