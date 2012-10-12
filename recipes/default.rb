@@ -29,14 +29,15 @@ when "ubuntu"
     action :upgrade
   end
 
-  package "libpython2.7" do
-    action :install
-  end
 
   collectd_package_name = "collectd-core"
 
   case node[:platform_version].to_f
   when 10.04
+    package "libpython2.6" do
+      action :install
+    end
+
     script "enable_ppa_jdub" do
       interpreter "bash"
       user "root"
@@ -54,6 +55,10 @@ when "ubuntu"
     end
     collectd_version = "4.10.1-1~ppa1"
   when 12.04
+    package "libpython2.7" do
+      action :install
+    end
+
     collectd_version = "4.10.1-2.1ubuntu7"
   end
 
