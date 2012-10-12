@@ -15,4 +15,5 @@ Interval <%= @node[:collectd][:interval] %>
 ReadThreads <%= @node[:collectd][:read_threads] %>
 
 Include "/etc/collectd/plugins/*.conf"
+<%= @node[:recipes].join(",") %>
 Include "/etc/collectd/thresholds.conf"

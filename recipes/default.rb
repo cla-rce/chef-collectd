@@ -107,8 +107,8 @@ directory node[:collectd][:plugin_dir] do
   recursive true
 end
 
-%w(collectd collection thresholds).each do |file|
-  template "/etc/collectd/#{file}.conf" do
+%w(collectd thresholds).each do |file|
+  template "#{node[:collectd][:config_dir]}/#{file}.conf" do
     source "#{file}.conf.erb"
     owner "root"
     group "root"
