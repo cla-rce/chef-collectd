@@ -68,13 +68,14 @@ include_recipe "yum::default"
 include_recipe "yum::repoforge"
 
 if node[:kernel][:machine] == 'x86_64'
-  collectd_package_name = "collectd.x86_64"
+  collectd_version = 'x86_64'
 else
-  collectd_package_name = "collectd.i386"
+  collectd_version = 'i386' 
 end
 
 package "collectd" do
   package_name collectd_package_name
+  arch collectd_version
 end
   
 
