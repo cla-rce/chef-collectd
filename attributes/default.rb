@@ -21,13 +21,18 @@ case node[:platform]
 when "ubuntu"
   default[:collectd][:plugin_config_dir] = "/etc/collectd/plugins"
   default[:collectd][:config_dir] = "/etc/collectd"
+  default[:collectd][:plugin_dir] = "/usr/lib/collectd"
 when "centos", "redhat"
   default[:collectd][:plugin_config_dir] = "/etc/collectd.d"
   default[:collectd][:config_dir] = "/etc"
+  if node[:kernel][:machine] == 'x86_64'
+    default[:collectd][:plugin_dir] = "/usr/lib64/collectd"
+  else
+    default[:collectd][:plugin_dir] = "/usr/lib/collectd"
+  end
 end
 
 default[:collectd][:base_dir] = "/var/lib/collectd"
-default[:collectd][:plugin_dir] = "/usr/lib/collectd"
 default[:collectd][:types_db] = ["/usr/share/collectd/types.db"]
 default[:collectd][:interval] = 10
 default[:collectd][:read_threads] = 5
