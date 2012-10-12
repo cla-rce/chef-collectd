@@ -17,6 +17,15 @@
 # limitations under the License.
 #
 
+case node[:platform]
+when "ubuntu"
+  default[:collectd][:plugin_config_dir] = "/etc/collectd/plugins"
+  default[:collectd][:config_dir] = "/etc/collectd"
+when "centos", "redhat"
+  default[:collectd][:plugin_config_dir] = "/etc/collectd.d"
+  default[:collectd][:config_dir] = "/etc"
+end
+
 default[:collectd][:base_dir] = "/var/lib/collectd"
 default[:collectd][:plugin_dir] = "/usr/lib/collectd"
 default[:collectd][:types_db] = ["/usr/share/collectd/types.db"]
