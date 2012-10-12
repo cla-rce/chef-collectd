@@ -73,7 +73,7 @@ else
   collectd_version = 'i386' 
 end
 
-package "collectd" do
+yum_package "collectd" do
   package_name collectd_package_name
   arch collectd_version
 end
