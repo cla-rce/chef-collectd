@@ -67,6 +67,8 @@ when "redhat", "centos"
 include_recipe "yum::default"
 include_recipe "yum::repoforge"
 
+
+
 if node[:kernel][:machine] == 'x86_64'
   collectd_version = 'x86_64'
 else
@@ -75,6 +77,7 @@ end
 
 yum_package "#{collectd_package_name}" do
   arch "#{collectd_version}"
+  flush_cache :before
 end
   
 
