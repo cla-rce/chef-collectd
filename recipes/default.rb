@@ -111,6 +111,10 @@ when "redhat", "centos"
   end
 end
 
+service "collectd" do
+  action [:enable, :start]
+end
+
 directory node[:collectd][:plugin_config_dir] do
   owner "root"
   group "root"
