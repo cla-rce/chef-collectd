@@ -29,6 +29,10 @@ when "ubuntu"
     action :upgrade
   end
 
+  package "libpython2.7" do
+    action :install
+  end
+
   collectd_package_name = "collectd-core"
 
   case node[:platform_version].to_f
