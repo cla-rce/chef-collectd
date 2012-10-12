@@ -77,7 +77,7 @@ end
 
 yum_package "#{collectd_package_name}" do
   arch "#{collectd_version}"
-  flush_cache :before
+  flush_cache [ :before ]
 end
   
 
