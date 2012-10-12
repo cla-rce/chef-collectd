@@ -53,7 +53,7 @@ when 12.04
   collectd_version = "4.10.1-2.1ubuntu7"
 end
 
-package "collectd" do
+package "#{collectd_package_name}" do
   package_name collectd_package_name
   version collectd_version
 end
@@ -73,9 +73,8 @@ else
   collectd_version = 'i386' 
 end
 
-yum_package "collectd" do
-  package_name collectd_package_name
-  arch collectd_version
+yum_package "#{collectd_package_name}" do
+  arch "#{collectd_version}"
 end
   
 
