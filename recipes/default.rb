@@ -23,79 +23,78 @@ collectd_package_name = ''
 
 case node[:platform]
 when "ubuntu"
-include_recipe "apt::default"
+  include_recipe "apt::default"
 
-package "python-software-properties" do
-  action :upgrade
-end
-
-collectd_package_name = "collectd-core"
-
-case node[:platform_version].to_f
-when 10.04
-  script "enable_ppa_jdub" do
-    interpreter "bash"
-    user "root"
-    cwd "/tmp"
-    if node[:platform_version].to_f >= 11.04 then
-      add_apt_repo_flags = "-y"
-    else
-      add_apt_repo_flags = ""
-    end
-    code <<-EOH
-      /usr/bin/add-apt-repository #{add_apt_repo_flags} ppa:jdub
-    EOH
-    not_if "/usr/bin/test -f /etc/apts/sources.list.d/jdub-ppa-lucid.list"
-    notifies :run, "execute[apt_update]", :immediately
+  package "python-software-properties" do
+    action :upgrade
   end
-  collectd_version = "4.10.1-1~ppa1"
-when 12.04
-  collectd_version = "4.10.1-2.1ubuntu7"
-end
 
-package "#{collectd_package_name}" do
-  package_name collectd_package_name
-  version collectd_version
-end
+  collectd_package_name = "collectd-core"
 
-execute "apt_update" do
-  command "apt-get update"
-  action :nothing
-end
+  case node[:platform_version].to_f
+  when 10.04
+    script "enable_ppa_jdub" do
+      interpreter "bash"
+      user "root"
+      cwd "/tmp"
+      if node[:platform_version].to_f >= 11.04 then
+        add_apt_repo_flags = "-y"
+      else
+        add_apt_repo_flags = ""
+      end
+      code <<-EOH
+        /usr/bin/add-apt-repository #{add_apt_repo_flags} ppa:jdub
+      EOH
+      not_if "/usr/bin/test -f /etc/apts/sources.list.d/jdub-ppa-lucid.list"
+      notifies :run, "execute[apt_update]", :immediately
+    end
+    collectd_version = "4.10.1-1~ppa1"
+  when 12.04
+    collectd_version = "4.10.1-2.1ubuntu7"
+  end
+
+  package "#{collectd_package_name}" do
+    package_name collectd_package_name
+    version collectd_version
+  end
+
+  execute "apt_update" do
+    command "apt-get update"
+    action :nothing
+  end
 
 when "redhat", "centos"
-include_recipe "yum::default"
-include_recipe "yum::repoforge"
+  include_recipe "yum::default"
+  include_recipe "yum::repoforge"
 
-collectd_package_name = "collectd"
+  collectd_package_name = "collectd"
 
-if node[:kernel][:machine] == 'x86_64'
-  collectd_version = 'x86_64'
-else
-  collectd_version = 'i386' 
-end
+  if node[:kernel][:machine] == 'x86_64'
+    collectd_version = 'x86_64'
+  else
+    collectd_version = 'i386' 
+  end
 
-yum_package "#{collectd_package_name}" do
-  arch "#{collectd_version}"
-  flush_cache [ :before ]
-end
+  yum_package "#{collectd_package_name}" do
+    arch "#{collectd_version}"
+    flush_cache [ :before ]
+  end
 
-cookbook_file "/tmp/collectd_centos58_init_patch" do
-  source "centos58_init_patch"
-  mode "0644"
-end
+  cookbook_file "/tmp/collectd_centos58_init_patch" do
+    source "centos58_init_patch"
+    mode "0644"
+  end
 
-execute "patch" do
-  command "/usr/bin/patch /etc/init.d/collectd < /tmp/collectd_centos58_init_patch"
-  user "root"
-  action :run
-end
+  execute "patch" do
+    command "/usr/bin/patch /etc/init.d/collectd < /tmp/collectd_centos58_init_patch"
+    user "root"
+    action :run
+  end
 
-execute "rm_diff" do
-  command "/bin/rm /tmp/collectd_centos58_init_patch"
-  action :run
-end
-
+  execute "rm_diff" do
+    command "/bin/rm /tmp/collectd_centos58_init_patch"
+    action :run
+  end
 end
 
 service "collectd" do
