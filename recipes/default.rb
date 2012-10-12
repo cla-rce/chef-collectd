@@ -67,7 +67,7 @@ when "redhat", "centos"
 include_recipe "yum::default"
 include_recipe "yum::repoforge"
 
-
+collectd_package_name = "collectd"
 
 if node[:kernel][:machine] == 'x86_64'
   collectd_version = 'x86_64'
