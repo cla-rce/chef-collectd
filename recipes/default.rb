@@ -20,7 +20,6 @@
 collectd_version = ''
 collectd_package_name = ''
 
-
 case node[:platform]
 when "ubuntu"
   include_recipe "apt::default"
@@ -29,37 +28,45 @@ when "ubuntu"
     action :upgrade
   end
 
-
   collectd_package_name = "collectd-core"
 
   case node[:platform_version].to_f
   when 10.04
+
+    # install python dependency
     package "libpython2.6" do
       action :install
     end
 
+    # setup a ppa to get a reasonable version of collectd
     script "enable_ppa_jdub" do
       interpreter "bash"
       user "root"
       cwd "/tmp"
-      if node[:platform_version].to_f >= 11.04 then
-        add_apt_repo_flags = "-y"
-      else
-        add_apt_repo_flags = ""
-      end
       code <<-EOH
         /usr/bin/add-apt-repository #{add_apt_repo_flags} ppa:jdub
       EOH
       not_if "/usr/bin/test -f /etc/apts/sources.list.d/jdub-ppa-lucid.list"
       notifies :run, "execute[apt_update]", :immediately
     end
+    
+    # specify the version number to install
     collectd_version = "4.10.1-1~ppa1"
   when 12.04
+
+    # install python dependency
     package "libpython2.7" do
       action :install
     end
 
+    # specify the version number to install
     collectd_version = "4.10.1-2.1ubuntu7"
+  end
+
+  # common to all ubuntu versions
+  execute "apt_update" do
+    command "apt-get update"
+    action :nothing
   end
 
   package "#{collectd_package_name}" do
@@ -67,12 +74,8 @@ when "ubuntu"
     version collectd_version
   end
 
-  execute "apt_update" do
-    command "apt-get update"
-    action :nothing
-  end
-
 when "redhat", "centos"
+  # we're going to need things from repoforge since collectd is in the default repo
   include_recipe "yum::default"
   include_recipe "yum::repoforge"
 
@@ -84,11 +87,13 @@ when "redhat", "centos"
     collectd_version = 'i386' 
   end
 
+  # install collectd
   yum_package "#{collectd_package_name}" do
     arch "#{collectd_version}"
     flush_cache [ :before ]
   end
 
+  # fix the init script to avoid the python global problem
   cookbook_file "/tmp/collectd_centos58_init_patch" do
     source "centos58_init_patch"
     mode "0644"
@@ -104,10 +109,6 @@ when "redhat", "centos"
     command "/bin/rm /tmp/collectd_centos58_init_patch"
     action :run
   end
-end
-
-service "collectd" do
-  supports :restart => true, :status => true
 end
 
 directory node[:collectd][:plugin_config_dir] do
