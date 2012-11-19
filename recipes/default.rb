@@ -77,7 +77,8 @@ when "ubuntu"
 when "redhat", "centos"
   # we're going to need things from repoforge since collectd is in the default repo
   include_recipe "yum::default"
-  include_recipe "yum::repoforge"
+  ## copied to CLA repos that are active on the host, local mod
+  #include_recipe "yum::repoforge"
 
   collectd_package_name = "collectd"
 
