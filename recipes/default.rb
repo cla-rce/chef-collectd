@@ -39,16 +39,19 @@ when "ubuntu"
     end
 
     # setup a ppa to get a reasonable version of collectd
-    script "enable_ppa_jdub" do
-      interpreter "bash"
-      user "root"
-      cwd "/tmp"
-      code <<-EOH
-        /usr/bin/add-apt-repository #{add_apt_repo_flags} ppa:jdub
-      EOH
-      not_if "/usr/bin/test -f /etc/apts/sources.list.d/jdub-ppa-lucid.list"
-      notifies :run, "execute[apt_update]", :immediately
-    end
+    ### this comes from CLA's PPAs
+    
+    #script "enable_ppa_jdub" do
+    #  interpreter "bash"
+    #  user "root"
+    #  cwd "/tmp"
+    #  code <<-EOH
+    #    /usr/bin/add-apt-repository #{add_apt_repo_flags} ppa:jdub
+    #  EOH
+    #  not_if "/usr/bin/test -f /etc/apts/sources.list.d/jdub-ppa-lucid.list"
+    #  notifies :run, "execute[apt_update]", :immediately
+    #end
+    
     
     # specify the version number to install
     collectd_version = "4.10.1-1~ppa1"
