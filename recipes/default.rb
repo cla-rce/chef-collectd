@@ -101,6 +101,7 @@ when "redhat", "centos"
   cookbook_file "/tmp/collectd_centos58_init_patch" do
     source "centos58_init_patch"
     mode "0644"
+    action :create
     notifies :run, "execute[patch_collectd_init]"
   end
 
