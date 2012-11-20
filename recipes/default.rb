@@ -101,12 +101,11 @@ when "redhat", "centos"
   cookbook_file "/tmp/collectd_centos58_init_patch" do
     source "centos58_init_patch"
     mode "0644"
-    not_if "grep LD_PRELOAD=/usr/lib64/libpython /etc/init.d/collectd"
     notifies :run, "execute[patch_collectd_init]"
   end
 
   execute "patch_collectd_init" do
-    command "/usr/bin/patch /etc/init.d/collectd < /tmp/collectd_centos58_init_patch"
+    command "/usr/bin/patch -N /etc/init.d/collectd < /tmp/collectd_centos58_init_patch"
     user "root"
     action :nothing
   end
