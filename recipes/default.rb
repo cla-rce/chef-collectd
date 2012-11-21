@@ -102,18 +102,20 @@ when "redhat", "centos"
     source "centos58_init_patch"
     mode "0644"
     action :create
-    notifies :run, "execute[patch_collectd_init]"
+    notifies :run, "execute[patch_collectd_init]", :immediately
   end
 
   execute "patch_collectd_init" do
     command "/usr/bin/patch -N /etc/init.d/collectd < /tmp/collectd_centos58_init_patch"
     user "root"
     action :nothing
+    notifies :run, "execute[rm_diff]", :delayed
   end
 
   execute "rm_diff" do
-    command "/bin/rm /tmp/collectd_centos58_init_patch"
-    action :run
+    # don't worry about return value on this
+    command "/bin/rm /tmp/collectd_centos58_init_patch || true"
+    action :nothing
   end
 end
 
