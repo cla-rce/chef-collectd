@@ -100,6 +100,7 @@ when "redhat", "centos"
   # fix the init script to avoid the python global problem
   cookbook_file "/tmp/collectd_centos58_init_patch" do
     source "centos58_init_patch"
+    not_if "grep LD_PRELOAD= /etc/init.d/collectd"
     mode "0644"
     action :create
     notifies :run, "execute[patch_collectd_init]", :immediately
@@ -108,6 +109,7 @@ when "redhat", "centos"
   execute "patch_collectd_init" do
     command "/usr/bin/patch -N /etc/init.d/collectd < /tmp/collectd_centos58_init_patch"
     user "root"
+    returns [0, 1]
     action :nothing
     notifies :run, "execute[rm_diff]", :delayed
   end
