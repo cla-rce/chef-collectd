@@ -9,5 +9,6 @@ version          "1.0.0"
 depends "yum"
 depends "apt"
 
-supports         "ubuntu"
-supports	 ["redhat","scientific","centos"]
+%w(ubuntu redhat scientific centos).each do |os|
+  supports os
+end
